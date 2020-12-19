@@ -14,20 +14,30 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.postup.R
 import com.example.postup.databinding.ActivityMainBinding
 import com.example.postup.ui.fragment.posts.PostsViewModel
+import com.example.postup.util.constants.REFRESH_INTERVAL_NONE
+import com.example.postup.util.runnable.OnPostRefreshListener
+import com.example.postup.util.runnable.PostRefreshRunnable
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.ref.WeakReference
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnPostRefreshListener {
 
     lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
 
     val viewModel: PostsViewModel by viewModels()
+    var postRefreshRunnable: PostRefreshRunnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        init()
         bind()
         setupToolbarNavigation()
+    }
+
+    private fun init() {
+        postRefreshRunnable = PostRefreshRunnable(WeakReference(this))
     }
 
     private fun bind() {
@@ -48,6 +58,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        postRefreshRunnable?.refresh()
+    }
+
+    override fun onRefresh() {
+        viewModel.getPosts()
+        postRefreshRunnable?.refresh()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_toolbar, menu)
@@ -55,9 +76,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.action_refresh -> {
-                viewModel.getPosts()
+                postRefreshRunnable?.refresh(REFRESH_INTERVAL_NONE)
             }
         }
         return true
@@ -67,4 +88,9 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        postRefreshRunnable = null
+    }
 }
