@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +21,7 @@ import java.lang.ref.WeakReference
 class PostsFragment : Fragment(),
     OnItemClickListener {
 
-    val viewModel: PostsViewModel by viewModels()
+    val viewModel: PostsViewModel by activityViewModels()
 
     var _binding: FragmentPostsBinding? = null
     val binding get() = _binding!!
@@ -63,9 +64,10 @@ class PostsFragment : Fragment(),
     private fun observeViewModel() {
         viewModel.list.observe(viewLifecycleOwner, Observer { list ->
             with(binding.rvPosts) {
-                if (!list.isNullOrEmpty())
+                if (!list.isNullOrEmpty()) {
                     (adapter as ItemPostRecyclerViewAdapter).setList(list)
-
+                    startLayoutAnimation()
+                }
             }
         })
     }
