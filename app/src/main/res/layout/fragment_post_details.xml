@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="post"
+            type="com.example.postup.model.PostEntity" />
+        <variable
+            name="user"
+            type="com.example.postup.model.UserEntity" />
     </data>
 
     <FrameLayout
@@ -12,12 +18,102 @@
         android:layout_height="match_parent"
         tools:context=".ui.fragment.details.PostDetailsFragment">
 
-        <Button
+        <com.google.android.material.card.MaterialCardView
             android:layout_gravity="center"
-            android:id="@+id/btnGoToPosts"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Go to posts" />
+            android:layout_marginHorizontal="@dimen/small_100"
+            android:layout_marginTop="@dimen/small_100"
+            android:background="@android:color/white">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:id="@+id/tvPostTitle"
+                    style="@style/TextAppearance.MaterialComponents.Headline5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{post.title}"
+                    android:layout_marginTop="@dimen/large_100"
+                    android:paddingHorizontal="@dimen/large_100"
+                    android:textAlignment="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="This is just a random title" />
+
+                <TextView
+                    android:id="@+id/tvPostBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{post.body}"
+                    android:layout_marginTop="@dimen/large_100"
+                    android:paddingHorizontal="@dimen/normal_100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvPostTitle"
+                    tools:text="@string/lorem" />
+
+                <TextView
+                    android:id="@+id/tvBy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/normal_100"
+                    android:layout_marginTop="@dimen/large_100"
+                    android:text="By: "
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvPostBody" />
+
+                <TextView
+                    android:id="@+id/tvUserFullName"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:layout_width="wrap_content"
+                    android:text="@{user.name}"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBy"
+                    app:layout_constraintStart_toStartOf="@id/tvUserEmail"
+                    app:layout_constraintTop_toTopOf="@id/tvBy"
+                    tools:text="Marko Markovic" />
+
+                <TextView
+                    android:id="@+id/tvEmailPlaceholder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/normal_100"
+                    android:layout_marginTop="@dimen/small_100"
+                    android:text="Email: "
+                    android:layout_marginBottom="@dimen/large_100"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBy" />
+
+                <TextView
+                    android:id="@+id/tvUserEmail"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{user.email}"
+                    android:layout_marginBottom="@dimen/large_100"
+                    android:layout_marginHorizontal="@dimen/small_100"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tvEmailPlaceholder"
+                    app:layout_constraintTop_toTopOf="@id/tvEmailPlaceholder"
+                    tools:text="markovic.m@gmail.com"
+                    />
+
+                <ImageButton
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_delete"
+                    android:layout_marginEnd="@dimen/large_100"
+                    android:layout_marginBottom="@dimen/large_100"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
 </layout>
