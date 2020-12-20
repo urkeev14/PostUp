@@ -14,7 +14,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.postup.R
 import com.example.postup.databinding.ActivityMainBinding
 import com.example.postup.ui.fragment.posts.PostsViewModel
-import com.example.postup.util.constants.REFRESH_INTERVAL_NONE
+import com.example.postup.util.constants.REFRESH_IMMEDIATELY
 import com.example.postup.util.runnable.OnPostRefreshListener
 import com.example.postup.util.runnable.PostRefreshRunnable
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,10 +34,11 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
         init()
         bind()
         setupToolbarNavigation()
+        loadPosts()
     }
 
     private fun init() {
-        postRefreshRunnable = PostRefreshRunnable(WeakReference(this))
+        postRefreshRunnable = PostRefreshRunnable(WeakReference(this), viewModel)
     }
 
     private fun bind() {
@@ -58,6 +59,10 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
         }
     }
 
+    private fun loadPosts(){
+        viewModel.loadPosts()
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -65,7 +70,8 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
     }
 
     override fun onRefresh() {
-        viewModel.getPosts()
+        viewModel.deleteCachedPosts()
+        viewModel.fetchPostsFromAPI()
         postRefreshRunnable?.refresh()
     }
 
@@ -78,7 +84,7 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_refresh -> {
-                postRefreshRunnable?.refresh(REFRESH_INTERVAL_NONE)
+                postRefreshRunnable?.refresh(REFRESH_IMMEDIATELY)
             }
         }
         return true
@@ -92,5 +98,6 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
         super.onDestroy()
 
         postRefreshRunnable = null
+        viewModel.deleteCachedPosts()
     }
 }

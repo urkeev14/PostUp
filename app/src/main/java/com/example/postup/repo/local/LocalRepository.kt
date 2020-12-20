@@ -9,4 +9,23 @@ import com.example.postup.repo.local.dao.PostDao
 abstract class LocalRepository : RoomDatabase(){
 
     abstract fun postDao(): PostDao
+    var isModified: Boolean = false
+
+    suspend fun getCachedPosts(): List<PostEntity>?{
+        return postDao().getAllPosts()
+    }
+
+    suspend fun cachePosts(list: List<PostEntity>){
+        postDao().insertAll(list)
+        isModified = false
+    }
+
+    suspend fun deleteAllPosts(){
+        postDao().deleteAll()
+    }
+
+    suspend fun deletePost(id: Int) {
+        postDao().delete(id)
+        isModified = true
+    }
 }

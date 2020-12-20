@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.example.postup.R
+import com.example.postup.databinding.FragmentPostDetailsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PostDetailsFragment : Fragment() {
-
-    val viewModel: PostDetailsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

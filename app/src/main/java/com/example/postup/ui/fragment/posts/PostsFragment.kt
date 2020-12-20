@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.postup.databinding.FragmentPostsBinding
 import com.example.postup.util.recyclerview.adapter.ItemPostRecyclerViewAdapter
 import com.example.postup.util.recyclerview.adapter.listener.OnItemClickListener
 import com.example.postup.util.recyclerview.decorator.ItemPostRecyclerViewDecorator
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.ref.WeakReference
 
@@ -32,15 +32,10 @@ class PostsFragment : Fragment(),
     ): View? {
         _binding = FragmentPostsBinding.inflate(inflater, container, false)
 
-        loadData()
         configureLayout()
         observeViewModel()
 
         return binding.root
-    }
-
-    private fun loadData() {
-        viewModel.getPosts()
     }
 
     private fun configureLayout() {
@@ -48,16 +43,17 @@ class PostsFragment : Fragment(),
     }
 
     private fun initRecyclerView() {
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val adapter = ItemPostRecyclerViewAdapter(
+            WeakReference(this)
+        )
+        val decorator = ItemPostRecyclerViewDecorator(16, 16)
+
         binding.rvPosts.also {
-            it.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            it.adapter =
-                ItemPostRecyclerViewAdapter(
-                    WeakReference(this)
-                )
-            ItemPostRecyclerViewDecorator(16, 16).let { decoration ->
-                it.addItemDecoration(decoration)
-            }
+            it.layoutManager = layoutManager
+            it.adapter = adapter
+            it.addItemDecoration(decorator)
         }
     }
 
@@ -67,13 +63,19 @@ class PostsFragment : Fragment(),
                 if (!list.isNullOrEmpty()) {
                     (adapter as ItemPostRecyclerViewAdapter).setList(list)
                     startLayoutAnimation()
+                    Snackbar.make(requireView(), "Refreshing ...", Snackbar.LENGTH_SHORT).show()
                 }
             }
         })
     }
 
     override fun onItemClick(position: Int) {
-        Toast.makeText(requireContext(), "Hey $position", Toast.LENGTH_SHORT).show()
+        val post = viewModel.list.value?.get(position)
+
+        PostsFragmentDirections.actionPostsFragmentToPostDetailsFragment(post!!.userId!!, post.id!!)
+            .also { action ->
+                findNavController().navigate(action)
+            }
     }
 
     override fun onDestroyView() {

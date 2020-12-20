@@ -10,7 +10,7 @@ class RemoteRepository
     val postService: PostService
 ) {
 
-    suspend fun getPosts(): Response<List<PostEntity>>{
+    suspend fun fetchPosts(): Response<List<PostEntity>>{
         return postService.getPosts()
     }
 }
