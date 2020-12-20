@@ -20,6 +20,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_gravity="center"
+            android:layoutAnimation="@anim/recyclerview_animation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/small_100"
@@ -104,6 +105,7 @@
                     />
 
                 <ImageButton
+                    android:id="@+id/btnRemovePost"
                     android:background="@android:color/transparent"
                     android:src="@drawable/ic_delete"
                     android:layout_marginEnd="@dimen/large_100"

@@ -1,5 +1,6 @@
 package com.example.postup.repo.local
 
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.postup.model.PostEntity
@@ -9,7 +10,6 @@ import com.example.postup.repo.local.dao.PostDao
 abstract class LocalRepository : RoomDatabase(){
 
     abstract fun postDao(): PostDao
-    var isModified: Boolean = false
 
     suspend fun getCachedPosts(): List<PostEntity>?{
         return postDao().getAllPosts()
@@ -17,7 +17,7 @@ abstract class LocalRepository : RoomDatabase(){
 
     suspend fun cachePosts(list: List<PostEntity>){
         postDao().insertAll(list)
-        isModified = false
+        LocalRepositoryObserver._isModified.postValue(false)
     }
 
     suspend fun deleteAllPosts(){
@@ -26,6 +26,6 @@ abstract class LocalRepository : RoomDatabase(){
 
     suspend fun deletePost(id: Int) {
         postDao().delete(id)
-        isModified = true
+        LocalRepositoryObserver._isModified.postValue(true)
     }
 }

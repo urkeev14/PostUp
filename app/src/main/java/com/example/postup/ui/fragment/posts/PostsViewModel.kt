@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.postup.model.PostEntity
 import com.example.postup.repo.local.LocalRepository
+import com.example.postup.repo.local.LocalRepositoryObserver
 import com.example.postup.repo.remote.RemoteRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -26,9 +27,9 @@ class PostsViewModel
      * from REST API.
      */
     fun loadPosts(){
-        if(!repoLocal.isModified){
+        if(LocalRepositoryObserver.isModified()){
             CoroutineScope(IO).launch {
-                repoLocal.getCachedPosts().also { cachedPosts->
+                repoLocal.getCachedPosts().also { cachedPosts ->
                     if (cachedPosts.isNullOrEmpty()){
                         fetchPostsFromAPI()
                     }
@@ -59,23 +60,21 @@ class PostsViewModel
         }
     }
 
-    fun isCacheModified(): Boolean = repoLocal.isModified
-
     fun deleteCachedPosts(){
         CoroutineScope(IO).launch {
             repoLocal.deleteAllPosts()
         }
     }
 
-    fun deletePost(id: Int){
-        CoroutineScope(IO).launch {
-            repoLocal.deletePost(id)
-        }
-    }
-
     private fun cachePosts(list: List<PostEntity>){
         CoroutineScope(IO).launch {
             repoLocal.cachePosts(list)
+        }
+    }
+
+    fun loadCachedPosts() {
+        CoroutineScope(IO).launch {
+            list.postValue(repoLocal.getCachedPosts())
         }
     }
 }

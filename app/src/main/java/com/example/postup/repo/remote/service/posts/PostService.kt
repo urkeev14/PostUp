@@ -11,4 +11,8 @@ class PostService
     suspend fun getPosts(): Response<List<PostEntity>>{
         return api.getPosts()
     }
+
+    suspend fun fetchPost(postId: Int): PostEntity? {
+        return api.fetchPost(postId)
+    }
 }

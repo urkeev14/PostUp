@@ -30,5 +30,8 @@
         <argument
             android:name="postId"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_postDetailsFragment_to_postsFragment"
+            app:destination="@id/postsFragment" />
     </fragment>
 </navigation>

@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -13,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.postup.R
 import com.example.postup.databinding.ActivityMainBinding
+import com.example.postup.repo.local.LocalRepositoryObserver
 import com.example.postup.ui.fragment.posts.PostsViewModel
 import com.example.postup.util.constants.REFRESH_IMMEDIATELY
 import com.example.postup.util.runnable.OnPostRefreshListener
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
     }
 
     private fun init() {
-        postRefreshRunnable = PostRefreshRunnable(WeakReference(this), viewModel)
+        postRefreshRunnable = PostRefreshRunnable(WeakReference(this))
     }
 
     private fun bind() {
@@ -54,8 +56,8 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
 
         setSupportActionBar(binding.toolbar)
 
-        AppBarConfiguration(navController.graph).also {
-            setupActionBarWithNavController(navController, it)
+        AppBarConfiguration(navController.graph).also {config ->
+            setupActionBarWithNavController(navController, config)
         }
     }
 
@@ -65,7 +67,10 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
 
     override fun onResume() {
         super.onResume()
-
+        LocalRepositoryObserver._isModified.observe(this, Observer { isModified ->
+            if(isModified)
+                viewModel.loadCachedPosts()
+        })
         postRefreshRunnable?.refresh()
     }
 
