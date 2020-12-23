@@ -34,12 +34,23 @@ class PostDetailsFragment : Fragment() {
     ): View? {
         _binding = FragmentPostDetailsBinding.inflate(inflater, container, false)
 
+        hideRefreshButton()
         getFromNavArgs()
         loadData()
         observeData()
 
         return binding.root
     }
+
+
+    private fun hideRefreshButton() {
+        requireActivity().let {
+            val refreshButton = it.findViewById<View>(R.id.action_refresh)
+            refreshButton.visibility = View.INVISIBLE
+            refreshButton.refreshDrawableState()
+        }
+    }
+
 
     fun getFromNavArgs(){
         userId = navArgs.userId
@@ -86,7 +97,16 @@ class PostDetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
+        showRefreshButton()
         _binding = null
+    }
+
+
+    private fun showRefreshButton() {
+        activity?.let {
+            val refreshButton = it.findViewById<View>(R.id.action_refresh)
+            refreshButton.visibility = View.VISIBLE
+        }
     }
 
 }

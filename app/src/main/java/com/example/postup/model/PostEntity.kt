@@ -6,7 +6,7 @@ import androidx.databinding.library.baseAdapters.BR
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "post_entity")
 class PostEntity : BaseObservable() {
 
     @get: Bindable

@@ -8,6 +8,7 @@ import com.example.postup.repo.local.LocalRepository
 import com.example.postup.repo.remote.RemoteRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class PostsViewModel
@@ -39,6 +40,7 @@ class PostsViewModel
      */
     fun fetchPostsFromAPI() {
         CoroutineScope(IO).launch {
+            deleteCachedPosts().join()
             repoRemote.fetchPosts().also { response ->
                 if (response.isSuccessful && !response.body().isNullOrEmpty()) {
                     val fetchedPosts = response.body()
@@ -49,8 +51,8 @@ class PostsViewModel
         }
     }
 
-    fun deleteCachedPosts() {
-        CoroutineScope(IO).launch {
+    fun deleteCachedPosts() : Job{
+        return CoroutineScope(IO).launch {
             repoLocal.deleteAllPosts()
         }
     }

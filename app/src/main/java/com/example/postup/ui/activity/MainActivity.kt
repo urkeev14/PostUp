@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.postup.R
 import com.example.postup.app.PostUp
@@ -53,19 +54,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupToolbarNavigation() {
+        setSupportActionBar(binding.toolbar)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
         navController = navHostFragment.findNavController()
 
-        setSupportActionBar(binding.toolbar)
-
-        AppBarConfiguration(navController.graph).also {config ->
-            setupActionBarWithNavController(navController, config)
-        }
+//        AppBarConfiguration(navController.graph).also {config ->
+            setupActionBarWithNavController(navController)
+//        }
+        NavigationUI.setupWithNavController(binding.toolbar, navController)
     }
 
     private fun loadPosts(){
-        viewModel.loadPosts()
+        viewModel.fetchPostsFromAPI()
     }
 
     override fun onResume() {
@@ -100,9 +101,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
 
         _postRefreshRunnable = null
         viewModel.deleteCachedPosts()
+
+        super.onDestroy()
     }
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.postup.R
 import com.example.postup.databinding.FragmentPostsBinding
 import com.example.postup.util.recyclerview.adapter.ItemPostRecyclerViewAdapter
 import com.example.postup.util.recyclerview.adapter.listener.OnItemClickListener
@@ -83,5 +84,6 @@ class PostsFragment : Fragment(),
 
         _binding = null
     }
+
 
 }
