@@ -73,11 +73,6 @@ class MainActivity : AppCompatActivity() {
         observeCacheChange()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        PostUp.setConfigurationChanged()
-        super.onConfigurationChanged(newConfig)
-    }
-
     private fun observeCacheChange() {
         LocalRepositoryObserver._isModified.observe(this, Observer { isModified ->
             if (isModified)

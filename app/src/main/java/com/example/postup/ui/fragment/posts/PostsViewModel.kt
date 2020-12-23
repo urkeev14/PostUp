@@ -19,30 +19,9 @@ class PostsViewModel
     val list: MutableLiveData<List<PostEntity>?> = MutableLiveData(null)
 
     /**
-     * Checks if user modified posts. If he did not, we try loading cached posts
-     * from local database if they exist. If they do not exist, we load them from REST API.
-     *
-     * On the other side, if cached posts are modified, we delete them and fetch fresh posts
-     * from REST API.
+     * Tries to load cached posts from local database if they exist.
+     * If they do not exist, we load them from REST API.
      */
-/*    fun loadPosts(){
-        if(LocalRepositoryObserver.isCacheModified()){
-            CoroutineScope(IO).launch {
-                repoLocal.getCachedPosts().also { cachedPosts ->
-                    if (cachedPosts.isNullOrEmpty()){
-                        fetchPostsFromAPI()
-                    }
-                    else{
-                        list.postValue(cachedPosts)
-                    }
-                }
-            }
-        }else{
-            deleteCachedPosts()
-            fetchPostsFromAPI()
-        }
-    }*/
-
     fun loadPosts() {
         CoroutineScope(IO).launch {
             repoLocal.getCachedPosts().also { cachedPosts ->

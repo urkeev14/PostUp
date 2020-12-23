@@ -14,7 +14,6 @@ class PostRefreshRunnable(
     val viewModel: PostsViewModel
 ) {
     var millis: Long = REFRESH_INTERVAL_STANDARD
-    var isConfigChange = false
 
     init {
         execute(REFRESH_INTERVAL_STANDARD)
@@ -30,13 +29,10 @@ class PostRefreshRunnable(
         }
     }
 
-    private suspend fun refreshIfNeed() {
+    private fun refreshIfNeed() {
 
-        //TODO: Promeni logiku, nece manual refresh
         if (refreshConditionsMet()) {
             viewModel.fetchPostsFromAPI()
-        }else if (PostUp.isConfigChanged){
-            PostUp.setConfigurationChanged()
         }
     }
 
