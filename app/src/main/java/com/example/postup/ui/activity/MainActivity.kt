@@ -23,13 +23,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.lang.ref.WeakReference
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), OnPostRefreshListener {
+class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
 
-    val viewModel: PostsViewModel by viewModels()
-    var postRefreshRunnable: PostRefreshRunnable? = null
+    private val viewModel: PostsViewModel by viewModels()
+    private var _postRefreshRunnable: PostRefreshRunnable? = null
+    private val postRefreshRunnable get() = _postRefreshRunnable!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
     }
 
     private fun init() {
-        postRefreshRunnable = PostRefreshRunnable(WeakReference(this))
+        _postRefreshRunnable = PostRefreshRunnable(viewModel)
     }
 
     private fun bind() {
@@ -67,17 +68,14 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
 
     override fun onResume() {
         super.onResume()
-        LocalRepositoryObserver._isModified.observe(this, Observer { isModified ->
-            if(isModified)
-                viewModel.loadCachedPosts()
-        })
-        postRefreshRunnable?.refresh()
+        observeCacheChange()
     }
 
-    override fun onRefresh() {
-        viewModel.deleteCachedPosts()
-        viewModel.fetchPostsFromAPI()
-        postRefreshRunnable?.refresh()
+    private fun observeCacheChange() {
+        LocalRepositoryObserver._isModified.observe(this, Observer { isModified ->
+            if (isModified)
+                viewModel.loadCachedPosts()
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -89,7 +87,7 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_refresh -> {
-                postRefreshRunnable?.refresh(REFRESH_IMMEDIATELY)
+                postRefreshRunnable.execute(REFRESH_IMMEDIATELY)
             }
         }
         return true
@@ -102,7 +100,7 @@ class MainActivity : AppCompatActivity(), OnPostRefreshListener {
     override fun onDestroy() {
         super.onDestroy()
 
-        postRefreshRunnable = null
+        _postRefreshRunnable = null
         viewModel.deleteCachedPosts()
     }
 }

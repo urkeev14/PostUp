@@ -4,5 +4,5 @@ import androidx.lifecycle.MutableLiveData
 
 object LocalRepositoryObserver {
     var _isModified = MutableLiveData(false)
-    fun isModified() = _isModified.value!!
+    fun isCacheModified() = _isModified.value!!
 }

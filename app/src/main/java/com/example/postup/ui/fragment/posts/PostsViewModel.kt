@@ -27,7 +27,7 @@ class PostsViewModel
      * from REST API.
      */
     fun loadPosts(){
-        if(LocalRepositoryObserver.isModified()){
+        if(LocalRepositoryObserver.isCacheModified()){
             CoroutineScope(IO).launch {
                 repoLocal.getCachedPosts().also { cachedPosts ->
                     if (cachedPosts.isNullOrEmpty()){
