@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.postup.model.PostEntity
 import com.example.postup.repo.local.LocalRepository
-import com.example.postup.repo.local.LocalRepositoryObserver
 import com.example.postup.repo.remote.RemoteRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -26,7 +25,7 @@ class PostsViewModel
      * On the other side, if cached posts are modified, we delete them and fetch fresh posts
      * from REST API.
      */
-    fun loadPosts(){
+/*    fun loadPosts(){
         if(LocalRepositoryObserver.isCacheModified()){
             CoroutineScope(IO).launch {
                 repoLocal.getCachedPosts().also { cachedPosts ->
@@ -42,8 +41,19 @@ class PostsViewModel
             deleteCachedPosts()
             fetchPostsFromAPI()
         }
-    }
+    }*/
 
+    fun loadPosts() {
+        CoroutineScope(IO).launch {
+            repoLocal.getCachedPosts().also { cachedPosts ->
+                if (cachedPosts.isNullOrEmpty()) {
+                    fetchPostsFromAPI()
+                } else {
+                    list.postValue(cachedPosts)
+                }
+            }
+        }
+    }
 
     /**
      * Fetches new posts from REST API and caches them in local repository
@@ -60,13 +70,13 @@ class PostsViewModel
         }
     }
 
-    fun deleteCachedPosts(){
+    fun deleteCachedPosts() {
         CoroutineScope(IO).launch {
             repoLocal.deleteAllPosts()
         }
     }
 
-    private fun cachePosts(list: List<PostEntity>){
+    private fun cachePosts(list: List<PostEntity>) {
         CoroutineScope(IO).launch {
             repoLocal.cachePosts(list)
         }

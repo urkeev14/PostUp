@@ -1,5 +1,6 @@
 package com.example.postup.ui.activity
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.postup.R
+import com.example.postup.app.PostUp
 import com.example.postup.databinding.ActivityMainBinding
 import com.example.postup.repo.local.LocalRepositoryObserver
 import com.example.postup.ui.fragment.posts.PostsViewModel
@@ -69,6 +71,11 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         observeCacheChange()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        PostUp.setConfigurationChanged()
+        super.onConfigurationChanged(newConfig)
     }
 
     private fun observeCacheChange() {

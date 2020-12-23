@@ -1,7 +1,6 @@
 package com.example.postup.util.runnable
 
-import android.os.Handler
-import android.os.Looper
+import com.example.postup.app.PostUp
 import com.example.postup.repo.local.LocalRepositoryObserver
 import com.example.postup.ui.fragment.posts.PostsViewModel
 import com.example.postup.util.constants.REFRESH_IMMEDIATELY
@@ -10,18 +9,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
 
 class PostRefreshRunnable(
     val viewModel: PostsViewModel
 ) {
     var millis: Long = REFRESH_INTERVAL_STANDARD
+    var isConfigChange = false
 
     init {
         execute(REFRESH_INTERVAL_STANDARD)
     }
 
-    fun execute(interval: Long = REFRESH_INTERVAL_STANDARD){
+    fun execute(interval: Long = REFRESH_INTERVAL_STANDARD) {
         millis = interval
 
         CoroutineScope(IO).launch {
@@ -31,16 +30,22 @@ class PostRefreshRunnable(
         }
     }
 
-    private suspend fun refreshIfNeed(){
-        val isLocalRepoModified = LocalRepositoryObserver._isModified.value!!
+    private suspend fun refreshIfNeed() {
 
-        if(
-            millis == REFRESH_IMMEDIATELY ||
-            isLocalRepoModified ||
-            (isLocalRepoModified && millis == REFRESH_INTERVAL_STANDARD)
-        ){
+        //TODO: Promeni logiku, nece manual refresh
+        if (refreshConditionsMet()) {
             viewModel.fetchPostsFromAPI()
+        }else if (PostUp.isConfigChanged){
+            PostUp.setConfigurationChanged()
         }
+    }
+
+    private fun refreshConditionsMet(): Boolean {
+        val isLocalRepoModified = LocalRepositoryObserver.isCacheModified()
+
+        return millis == REFRESH_IMMEDIATELY ||
+                isLocalRepoModified ||
+                (isLocalRepoModified && millis == REFRESH_INTERVAL_STANDARD)
     }
 
 }
